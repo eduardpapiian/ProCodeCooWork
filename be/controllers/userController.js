@@ -13,11 +13,41 @@ signToken = user => {
 };
 
 module.exports = {
-  register: async (req, res) => {
-    // checking if user already exist in bd
-    const existedUser = await User.findOne({email: req.body.email})
-    if (existedUser){
-      return res.status(400).send({message: 'Email already exists'});
+  register: async (req) => {
+    try{
+      // checking if user already exist in bd
+      const existedUser = await User.findOne({email: req.body.email});
+
+      if (existedUser){
+        const data = {
+          status: 400,
+          message: 'Email already exists'
+        };
+        return data;
+      }
+
+      //hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.pass, salt);
+
+      //create new user
+      const user = new User({
+        email: req.body.email,
+        password: hashedPassword
+      });
+
+      const savedUser = await user.save();
+
+      //send token
+      const token = signToken(savedUser);
+      return {
+        status: 200,
+        token: token
+      };
+
+    }catch(err){
+      console.log(err);
+      return err
     }
   }
 };
