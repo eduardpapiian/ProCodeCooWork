@@ -17,7 +17,7 @@ router.post('/register', registerValidation, async function(req, res, next) {
     if(data.status === 200){
       res.header('auth-token', data.token).send({token: data.token});
     }else{
-      res.status(400).send({message: 'User already exist'})
+      res.status(400).send({message: data.message})
     }
 
   }catch(err){

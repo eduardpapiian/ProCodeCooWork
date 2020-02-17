@@ -32,6 +32,8 @@ module.exports = {
 
       //create new user
       const user = new User({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
         email: req.body.email,
         password: hashedPassword
       });
